@@ -67,7 +67,7 @@ namespace ClasesJuegoCS.Game
             if (listener == null)
             {
                 listener = new();
-                /* --- Prefijos de http aqui --- */
+                listener.Prefixes.Add("http://GuessThePicture:8000/");
                 listener.Start();
                 Task.Run(() =>
                 {
