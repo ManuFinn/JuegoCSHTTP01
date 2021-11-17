@@ -7,6 +7,24 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+        <StackPanel HorizontalAlignment="Center">
+            <Label HorizontalAlignment="Center" Content="Introduce IP"/>
+            <TextBox Width="200"/>
+            <Border Margin="0 15 0 0" Width="200" Height="2" Background="Black"/>
+        </StackPanel>
+        <UniformGrid Grid.Row="1" Rows="2" Columns="2">
+            <Image></Image>
+            <Image></Image>
+            <Image></Image>
+            <Image></Image>
+        </UniformGrid>
+        <StackPanel Grid.Row="2">
+            <TextBox Margin="0 45 0 0" Width="200"/>
+        </StackPanel>
     </Grid>
 </Window>
