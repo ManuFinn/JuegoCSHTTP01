@@ -27,7 +27,8 @@ namespace ClasesJuegoCS.Game
 
         public GameServer()
         {
-            timer.Elapsed += (s, e) => {
+            timer.Elapsed += (s, e) =>
+            {
                 Stop();
             };
         }
@@ -146,8 +147,15 @@ namespace ClasesJuegoCS.Game
                             var playername = context.Request.QueryString["Name"];
                             if (playername != null)
                             {
-                                RemovePlayerByName(playername);
-                                context.Response.StatusCode = (int)HttpStatusCode.OK;
+                                if (RemovePlayerByName(playername))
+                                {
+                                    context.Response.StatusCode = (int)HttpStatusCode.OK;
+
+                                }
+                                else
+                                {
+                                    context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+                                }
                             }
                             else
                             {
