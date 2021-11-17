@@ -18,7 +18,7 @@ namespace ClasesJuegoCS.Game
         public async Task<bool> Join()
         {
             using HttpClient client = new();
-            var respone = await client.GetAsync($"{IP}:{Port}/Join?Name={Name}");
+            var respone = await client.GetAsync($"http://{IP}:{Port}/Join?Name={Name}");
             if (respone.StatusCode == HttpStatusCode.OK)
             {
                 /* Pudo unirse a la partida */
@@ -32,7 +32,7 @@ namespace ClasesJuegoCS.Game
         public async Task<bool?> Guessing()
         {
             using HttpClient client = new();
-            var respone = await client.GetAsync($"{IP}:{Port}/Guessing");
+            var respone = await client.GetAsync($"http://{IP}:{Port}/Guessing");
             if (respone.StatusCode == HttpStatusCode.OK)
             {
                 /* La partida ya ha empezado */
@@ -51,7 +51,7 @@ namespace ClasesJuegoCS.Game
         public async Task<bool?> Play()
         {
             using HttpClient client = new();
-            var respone = await client.GetAsync($"{IP}:{Port}/Play?Name={Name}&Guess={Guess}");
+            var respone = await client.GetAsync($"http://{IP}:{Port}/Play?Name={Name}&Guess={Guess}");
             if (respone.StatusCode == HttpStatusCode.OK)
             {
                 /* Palabra correcta */
@@ -69,7 +69,7 @@ namespace ClasesJuegoCS.Game
         public async Task<bool> Leave()
         {
             using HttpClient client = new();
-            var respone = await client.GetAsync($"{IP}:{Port}/Leave?Name={Name}");
+            var respone = await client.GetAsync($"http://{IP}:{Port}/Leave?Name={Name}");
             if (respone.StatusCode == HttpStatusCode.OK)
             {
                 /* El jugador ha salido de la partida */
