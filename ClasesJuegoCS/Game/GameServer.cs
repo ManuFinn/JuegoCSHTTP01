@@ -12,9 +12,9 @@ namespace ClasesJuegoCS.Game
     {
 
         public string Word { get; set; }
-        public List<string> ImageUrls { get; set; } = new();
+        public List<string> ImageUrls { get; private set; } = new();
 
-        public List<Player> Players { get; set; } = new();
+        public List<Player> Players { get; private set; } = new();
 
         public bool Playing { get; private set; } = false;
         public TimeSpan PlayTime { get; set; } = TimeSpan.FromSeconds(30);
@@ -67,14 +67,14 @@ namespace ClasesJuegoCS.Game
             if (listener == null)
             {
                 listener = new();
-                listener.Prefixes.Add("http://GuessThePicture:8000/");
+                listener.Prefixes.Add("http://localhost:8000/");
                 listener.Start();
                 Task.Run(() =>
                 {
                     while (listener.IsListening)
                     {
                         var context = listener.GetContext();
-                        if (context.Request.RawUrl == "/Join" && context.Request.HttpMethod == "POST")
+                        if (context.Request.RawUrl == "/Join")
                         {
                             var playername = context.Request.QueryString["Name"];
                             if (playername != null)
@@ -88,7 +88,7 @@ namespace ClasesJuegoCS.Game
                             }
                             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                         }
-                        else if (context.Request.RawUrl == "/Guessing" && context.Request.HttpMethod == "GET")
+                        else if (context.Request.RawUrl == "/Guessing")
                         {
                             if (Playing)
                             {
@@ -100,7 +100,7 @@ namespace ClasesJuegoCS.Game
                             }
                             context.Response.StatusCode = (int)HttpStatusCode.Conflict;
                         }
-                        else if (context.Request.RawUrl == "/Play" && context.Request.HttpMethod == "POST")
+                        else if (context.Request.RawUrl == "/Play")
                         {
                             var playername = context.Request.QueryString["Name"];
                             var guess = context.Request.QueryString["Guess"];
@@ -116,6 +116,10 @@ namespace ClasesJuegoCS.Game
                                     context.Response.StatusCode = (int)HttpStatusCode.Conflict;
                                 }
                             }
+                            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        }
+                        else
+                        {
                             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                         }
                         context.Response.Close();
