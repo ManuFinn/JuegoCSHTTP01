@@ -7,6 +7,19 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel HorizontalAlignment="Center">
+            <Label HorizontalAlignment="Center" Content="Introduce IP"/>
+            <Button Margin="0 25 0 0" Content=" Iniciar Servidor "/>
 
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <ListBox>
+                
+            </ListBox>
+        </Grid>
     </Grid>
 </Window>
