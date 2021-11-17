@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Timers;
 
 namespace ClasesJuegoCS.Game
 {
@@ -22,6 +23,14 @@ namespace ClasesJuegoCS.Game
 
         Stopwatch counter = new();
         HttpListener listener = null;
+        System.Timers.Timer timer = new();
+
+        public GameServer()
+        {
+            timer.Elapsed += (s, e) => {
+                Stop();
+            };
+        }
 
         public ulong GetScoreByElpasedTime(TimeSpan elapsed)
         {
@@ -57,8 +66,10 @@ namespace ClasesJuegoCS.Game
         {
             if (!Playing)
             {
-                counter.Restart();
                 Playing = true;
+                timer.Interval = PlayTime.TotalMilliseconds;
+                timer.Start();
+                counter.Restart();
             }
         }
 
@@ -117,12 +128,26 @@ namespace ClasesJuegoCS.Game
                                 var guessed = PlayerGuess(playername, guess);
                                 if (guessed == true)
                                 {
-                                    context.Response.StatusCode = (int)HttpStatusCode.Accepted;
+                                    context.Response.StatusCode = (int)HttpStatusCode.OK;
                                 }
                                 else if (guessed == false)
                                 {
                                     context.Response.StatusCode = (int)HttpStatusCode.Conflict;
                                 }
+                            }
+                            else
+                            {
+                                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+                            }
+                        }
+                        else if (context.Request.Url.LocalPath == "/Leave")
+                        {
+                            var playername = context.Request.QueryString["Name"];
+                            if (playername != null)
+                            {
+                                RemovePlayerByName(playername);
+                                context.Response.StatusCode = (int)HttpStatusCode.OK;
                             }
                             else
                             {
@@ -145,6 +170,7 @@ namespace ClasesJuegoCS.Game
             if (listener != null)
             {
                 listener.Stop();
+                listener = null;
             }
         }
 
@@ -152,8 +178,9 @@ namespace ClasesJuegoCS.Game
         {
             if (Playing)
             {
-                counter.Stop();
                 Playing = false;
+                timer.Stop();
+                counter.Stop();
             }
         }
 
