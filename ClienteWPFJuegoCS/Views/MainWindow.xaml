@@ -15,7 +15,8 @@
         <StackPanel HorizontalAlignment="Center">
             <Label HorizontalAlignment="Center" Content="Introduce IP"/>
             <TextBox Width="200"/>
-            <Border Margin="0 15 0 0" Width="200" Height="2" Background="Black"/>
+            <Button Margin="0 25 0 0" Content="Conectarse"/>
+
         </StackPanel>
         <UniformGrid Grid.Row="1" Rows="2" Columns="2">
             <Image></Image>
