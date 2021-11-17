@@ -29,7 +29,7 @@ namespace ClasesJuegoCS.Game
             return false;
         }
 
-        public async Task<bool> Guessing()
+        public async Task<bool?> Guessing()
         {
             using HttpClient client = new();
             var respone = await client.GetAsync($"{IP}:{Port}/Guessing");
@@ -43,8 +43,9 @@ namespace ClasesJuegoCS.Game
             else if (respone.StatusCode == HttpStatusCode.Conflict)
             {
                 /* La partida aun no ha empezado */
+                return false;
             }
-            return false;
+            return null;
         }
 
         public async Task<bool?> Play()
@@ -65,18 +66,20 @@ namespace ClasesJuegoCS.Game
             return null;
         }
 
-        public async void Leave()
+        public async Task<bool> Leave()
         {
             using HttpClient client = new();
             var respone = await client.GetAsync($"{IP}:{Port}/Leave?Name={Name}");
             if (respone.StatusCode == HttpStatusCode.OK)
             {
                 /* El jugador ha salido de la partida */
+                return true;
             }
             else if (respone.StatusCode == HttpStatusCode.Conflict)
             {
                 /* El jugador ya no pertence a esta partida */
             }
+            return false;
         }
 
     }
