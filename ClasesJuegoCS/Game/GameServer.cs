@@ -68,6 +68,7 @@ namespace ClasesJuegoCS.Game
             if (!Playing)
             {
                 Playing = true;
+                Players.ForEach(x => x.Guessed = false);
                 timer.Interval = PlayTime.TotalMilliseconds;
                 timer.Start();
                 counter.Restart();
@@ -218,10 +219,11 @@ namespace ClasesJuegoCS.Game
         {
             var elpased = counter.Elapsed;
             var player = Players.FirstOrDefault(x => x.Name == playername);
-            if (player != null)
+            if (player != null && !player.Guessed)
             {
                 if (guess == Word)
                 {
+                    player.Guessed = true;
                     player.Score += GetScoreByElpasedTime(elpased);
                     return true;
                 }
