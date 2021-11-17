@@ -45,6 +45,7 @@ namespace ClasesJuegoCS.Game
                 /* La partida aun no ha empezado */
                 return false;
             }
+            /* Error en el servidor */
             return null;
         }
 
@@ -62,7 +63,7 @@ namespace ClasesJuegoCS.Game
                 /* Palabra equivocada */
                 return false;
             }
-            /* El jugador ya no pertence a esta partida */
+            /* El jugador ya no pertence a esta partida o error en el servidor */
             return null;
         }
 

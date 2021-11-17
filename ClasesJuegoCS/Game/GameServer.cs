@@ -87,6 +87,7 @@ namespace ClasesJuegoCS.Game
                     while (listener.IsListening)
                     {
                         var context = listener.GetContext();
+                        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                         if (context.Request.Url.LocalPath == "/Join")
                         {
                             var playername = context.Request.QueryString["Name"];
@@ -98,11 +99,6 @@ namespace ClasesJuegoCS.Game
                                 context.Response.StatusCode = (int)HttpStatusCode.OK;
                                 context.Response.OutputStream.Write(data);
                                 context.Response.ContentType = "application/json";
-                            }
-                            else
-                            {
-                                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
                             }
                         }
                         else if (context.Request.Url.LocalPath == "/Guessing")
@@ -123,24 +119,22 @@ namespace ClasesJuegoCS.Game
                         }
                         else if (context.Request.Url.LocalPath == "/Play")
                         {
-                            var playername = context.Request.QueryString["Name"];
-                            var guess = context.Request.QueryString["Guess"];
-                            if (playername != null && guess != null)
+                            if (Playing)
                             {
-                                var guessed = PlayerGuess(playername, guess);
-                                if (guessed == true)
+                                var playername = context.Request.QueryString["Name"];
+                                var guess = context.Request.QueryString["Guess"];
+                                if (playername != null && guess != null)
                                 {
-                                    context.Response.StatusCode = (int)HttpStatusCode.OK;
+                                    var guessed = PlayerGuess(playername, guess);
+                                    if (guessed == true)
+                                    {
+                                        context.Response.StatusCode = (int)HttpStatusCode.OK;
+                                    }
+                                    else if (guessed == false)
+                                    {
+                                        context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+                                    }
                                 }
-                                else if (guessed == false)
-                                {
-                                    context.Response.StatusCode = (int)HttpStatusCode.Conflict;
-                                }
-                            }
-                            else
-                            {
-                                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
                             }
                         }
                         else if (context.Request.Url.LocalPath == "/Leave")
@@ -158,15 +152,6 @@ namespace ClasesJuegoCS.Game
                                     context.Response.StatusCode = (int)HttpStatusCode.Conflict;
                                 }
                             }
-                            else
-                            {
-                                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
-                            }
-                        }
-                        else
-                        {
-                            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                         }
                         context.Response.Close();
                     }
