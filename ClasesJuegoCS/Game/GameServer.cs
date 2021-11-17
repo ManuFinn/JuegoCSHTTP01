@@ -74,7 +74,7 @@ namespace ClasesJuegoCS.Game
                     while (listener.IsListening)
                     {
                         var context = listener.GetContext();
-                        if (context.Request.RawUrl == "/Join")
+                        if (context.Request.Url.LocalPath == "/Join")
                         {
                             var playername = context.Request.QueryString["Name"];
                             if (playername != null)
@@ -86,9 +86,13 @@ namespace ClasesJuegoCS.Game
                                 context.Response.OutputStream.Write(data);
                                 context.Response.ContentType = "application/json";
                             }
-                            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            else
+                            {
+                                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+                            }
                         }
-                        else if (context.Request.RawUrl == "/Guessing")
+                        else if (context.Request.Url.LocalPath == "/Guessing")
                         {
                             if (Playing)
                             {
@@ -98,9 +102,13 @@ namespace ClasesJuegoCS.Game
                                 context.Response.OutputStream.Write(data);
                                 context.Response.ContentType = "application/json";
                             }
-                            context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+                            else
+                            {
+                                context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+
+                            }
                         }
-                        else if (context.Request.RawUrl == "/Play")
+                        else if (context.Request.Url.LocalPath == "/Play")
                         {
                             var playername = context.Request.QueryString["Name"];
                             var guess = context.Request.QueryString["Guess"];
@@ -116,7 +124,11 @@ namespace ClasesJuegoCS.Game
                                     context.Response.StatusCode = (int)HttpStatusCode.Conflict;
                                 }
                             }
-                            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            else
+                            {
+                                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
+                            }
                         }
                         else
                         {
