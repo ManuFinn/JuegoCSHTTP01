@@ -1,9 +1,11 @@
+using GalaSoft.MvvmLight.Command;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace ClienteWPFJuegoCS.Game
 {
@@ -17,6 +19,14 @@ namespace ClienteWPFJuegoCS.Game
 
         public Tablero Visible { get; set; } = new();
         public Tablero Guess { get; set; } = new();
+
+        public ICommand ConectarCommand { get; set; }
+
+        public GameClient()
+        {
+            ConectarCommand = new RelayCommand(Join);
+        }
+
 
         public async Task<bool> Join()
         {
