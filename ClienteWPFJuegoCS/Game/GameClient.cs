@@ -25,15 +25,11 @@ namespace ClienteWPFJuegoCS.Game
 
         public GameClient()
         {
-            ConectarCommand = new RelayCommand(JoinCall);
+            ConectarCommand = new RelayCommand(Join);
         }
 
 
-        public async void JoinCall() {
-            var result = await Join();
-        }
-
-        public async Task<bool> Join()
+        public async void Join()
         {
             using HttpClient client = new();
             var respone = await client.GetAsync($"http://{IP}/Join?Name={Name}");
@@ -42,16 +38,12 @@ namespace ClienteWPFJuegoCS.Game
                 /* Pudo unirse a la partida */
                 var json = await respone.Content.ReadAsStringAsync();
                 Name = JsonSerializer.Deserialize<string>(json);
-                return true;
+                //return true;
             }
-            return false;
+            //return false;
         }
 
-        public async void GuessingCall() {
-            var result = await Guessing();
-        }
-
-        public async Task<bool?> Guessing()
+        public async void Guessing()
         {
             using HttpClient client = new();
             var respone = await client.GetAsync($"http://{IP}/Guessing");
@@ -61,22 +53,18 @@ namespace ClienteWPFJuegoCS.Game
                 var json = await respone.Content.ReadAsStringAsync();
                 Visible.Numbers = JsonSerializer.Deserialize<int?[]>(json);
                 Array.Copy(Visible.Numbers, Guess.Numbers, 9);
-                return true;
+                //return true;
             }
             else if (respone.StatusCode == HttpStatusCode.Conflict)
             {
                 /* La partida aun no ha empezado */
-                return false;
+                //return false;
             }
             /* Error en el servidor */
-            return null;
+            //return null;
         }
 
-        public async void PlayCall() {
-            var result = await Play();
-        }
-
-        public async Task<bool?> Play()
+        public async void Play()
         {
             using HttpClient client = new();
             /**/
@@ -90,35 +78,31 @@ namespace ClienteWPFJuegoCS.Game
             if (respone.StatusCode == HttpStatusCode.OK)
             {
                 /* Palabra correcta */
-                return true;
+                //return true;
             }
             else if (respone.StatusCode == HttpStatusCode.Conflict)
             {
                 /* Palabra equivocada */
-                return false;
+                //return false;
             }
             /* El jugador ya no pertence a esta partida o error en el servidor */
-            return null;
+            //return null;
         }
 
-        public async void LeaveCall() {
-            var result = await Leave();
-        }
-
-        public async Task<bool> Leave()
+        public async void Leave()
         {
             using HttpClient client = new();
             var respone = await client.DeleteAsync($"http://{IP}/Leave?Name={Name}");
             if (respone.StatusCode == HttpStatusCode.OK)
             {
                 /* El jugador ha salido de la partida */
-                return true;
+                //return true;
             }
             else if (respone.StatusCode == HttpStatusCode.Conflict)
             {
                 /* El jugador ya no pertence a esta partida */
             }
-            return false;
+            //return false;
         }
 
     }
