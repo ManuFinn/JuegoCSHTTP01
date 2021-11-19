@@ -15,24 +15,43 @@ namespace ServidorJuegoCS.Game
     public class GameServer
     {
 
+        bool playing;
+
         public Tablero Hidden { get; set; } = new();
         public Tablero Visible { get; set; } = null;
 
-        public List<Player> Players { get; private set; } = new();
+        public ObservableCollection<Player> Players { get; private set; } = new();
 
-        public bool Playing { get; private set; } = false;
+        public bool Playing { get => playing; private set { playing = value; RaiseProperty(); } }
         public TimeSpan PlayTime { get; set; } = TimeSpan.FromSeconds(60);
         public ulong PlayScore { get; set; } = 100;
 
         Stopwatch counter = new();
         HttpListener listener = null;
         System.Timers.Timer timer = new();
+        System.Timers.Timer counterback = new();
+
+        int seconds;
+        public int Seconds { get => seconds; set { seconds = value; RaiseProperty(); } }
+
+        public ICommand IniciarServidorCommnad { get; }
+        public ICommand IniciarPartidaCommnad { get; }
+        public ICommand DetenerPartidaCommnad { get; }
+        public ICommand DetenerServidorCommnad { get; }
 
         public GameServer()
         {
+            IniciarServidorCommnad = new RelayCommand(StartListen);
+            IniciarPartidaCommnad = new RelayCommand(Start);
+            DetenerPartidaCommnad = new RelayCommand(Stop);
+            DetenerServidorCommnad = new RelayCommand(StopListen);
             timer.Elapsed += (s, e) =>
             {
                 Stop();
+            };
+            counterback.Interval = 1000;
+            counterback.Elapsed += (s, e) => {
+                seconds--;
             };
         }
 
@@ -78,6 +97,7 @@ namespace ServidorJuegoCS.Game
                 Players.ForEach(x => x.Guessed = false);
                 timer.Interval = PlayTime.TotalMilliseconds;
                 timer.Start();
+                counterback.Start();
                 counter.Restart();
             }
         }
@@ -139,11 +159,13 @@ namespace ServidorJuegoCS.Game
                                     var guessed = PlayerGuess(guess);
                                     if (guessed == true)
                                     {
-                                        context.Response.StatusCode = (int)HttpStatusCode.OK;
+                                        context.Response.StatusCode = (int)HttpStatusCode.Accepted;
                                     }
                                     else if (guessed == false)
                                     {
                                         context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+                                    } else {
+                                        context.Response.StatusCode = (int)HttpStatusCode.OK;
                                     }
                                 }
                             }
@@ -186,6 +208,7 @@ namespace ServidorJuegoCS.Game
                 Playing = false;
                 timer.Stop();
                 counter.Stop();
+                counterback.Stop();
             }
         }
 
@@ -215,7 +238,8 @@ namespace ServidorJuegoCS.Game
         {
             var elpased = counter.Elapsed;
             var player = Players.FirstOrDefault(x => x.Name == guess.Player);
-            if (player != null && !player.Guessed)
+            if(player == null) return false;
+            if (!player.Guessed)
             {
                 if (Array.Equals(Hidden.Numbers, guess.Numbers))
                 {
