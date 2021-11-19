@@ -10,12 +10,13 @@ using System.Windows.Input;
 namespace ClienteWPFJuegoCS.Game
 {
 
-    public class GameClient
+    public class GameClient : Raiser
     {
 
-        public string IP { get; set; }
-        public ulong Port { get; set; }
-        public string Name { get; set; }
+        string name;
+
+        public string IP { get; set; } = "127.0.0.1";
+        public string Name { get => name; set { name = value; RaiseProperty(); } }
 
         public Tablero Visible { get; set; } = new();
         public Tablero Guess { get; set; } = new();
@@ -35,7 +36,7 @@ namespace ClienteWPFJuegoCS.Game
         public async Task<bool> Join()
         {
             using HttpClient client = new();
-            var respone = await client.GetAsync($"http://{IP}:{Port}/Join?Name={Name}");
+            var respone = await client.GetAsync($"http://{IP}/Join?Name={Name}");
             if (respone.StatusCode == HttpStatusCode.OK)
             {
                 /* Pudo unirse a la partida */
@@ -53,7 +54,7 @@ namespace ClienteWPFJuegoCS.Game
         public async Task<bool?> Guessing()
         {
             using HttpClient client = new();
-            var respone = await client.GetAsync($"http://{IP}:{Port}/Guessing");
+            var respone = await client.GetAsync($"http://{IP}/Guessing");
             if (respone.StatusCode == HttpStatusCode.OK)
             {
                 /* La partida ya ha empezado */
@@ -81,7 +82,7 @@ namespace ClienteWPFJuegoCS.Game
             /**/
             HttpRequestMessage request = new() {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri($"http://{IP}:{Port}/"),
+                RequestUri = new Uri($"http://{IP}/"),
                 Content = new StringContent(JsonSerializer.Serialize(new Jugada{Player = Name, Numbers = Guess.Numbers}), Encoding.UTF8, "application/json")
             };
             /**/
@@ -107,7 +108,7 @@ namespace ClienteWPFJuegoCS.Game
         public async Task<bool> Leave()
         {
             using HttpClient client = new();
-            var respone = await client.DeleteAsync($"http://{IP}:{Port}/Leave?Name={Name}");
+            var respone = await client.DeleteAsync($"http://{IP}/Leave?Name={Name}");
             if (respone.StatusCode == HttpStatusCode.OK)
             {
                 /* El jugador ha salido de la partida */

@@ -21,7 +21,7 @@ namespace ServidorJuegoCS.Game
         public List<Player> Players { get; private set; } = new();
 
         public bool Playing { get; private set; } = false;
-        public TimeSpan PlayTime { get; set; } = TimeSpan.FromSeconds(30);
+        public TimeSpan PlayTime { get; set; } = TimeSpan.FromSeconds(60);
         public ulong PlayScore { get; set; } = 100;
 
         Stopwatch counter = new();

@@ -16,7 +16,7 @@ namespace ClienteWPFJuegoCS.Game
             get => numbers;
             set {
                 numbers = value;
-                RaiseProperty();
+                RaiseProperty(null);
             }
         }
 
@@ -28,7 +28,16 @@ namespace ClienteWPFJuegoCS.Game
         [JsonIgnore] public int? Number6 { get => Numbers[5]; set { Numbers[5] = value; RaiseProperty(); FillRow(1); FillColumn(2); } }
         [JsonIgnore] public int? Number7 { get => Numbers[6]; set { Numbers[6] = value; RaiseProperty(); FillRow(2); FillColumn(0); } }
         [JsonIgnore] public int? Number8 { get => Numbers[7]; set { Numbers[7] = value; RaiseProperty(); FillRow(2); FillColumn(1); } }
-        [JsonIgnore] public int? Number9 { get => Numbers[8]; set { Numbers[8] = value; RaiseProperty(); FillRow(2); FillColumn(2); } }
+
+        [JsonIgnore] public bool Guessing1 => Number1 == null;
+        [JsonIgnore] public bool Guessing2 => Number2 == null;
+        [JsonIgnore] public bool Guessing3 => Number3 == null;
+        [JsonIgnore] public bool Guessing4 => Number4 == null;
+        [JsonIgnore] public bool Guessing5 => Number5 == null;
+        [JsonIgnore] public bool Guessing6 => Number6 == null;
+        [JsonIgnore] public bool Guessing7 => Number7 == null;
+        [JsonIgnore] public bool Guessing8 => Number8 == null;
+        [JsonIgnore] public bool Guessing9 => Number9 == null;
 
         public void Clear()
         {
@@ -46,7 +55,7 @@ namespace ClienteWPFJuegoCS.Game
                 if (B != null && C != null)
                 {
                     A = C - B;
-                    RaiseProperty();
+                    RaiseProperty(null);
                 }
             }
             else if (B == null)
@@ -54,7 +63,7 @@ namespace ClienteWPFJuegoCS.Game
                 if (A != null && C != null)
                 {
                     B = C - A;
-                    RaiseProperty();
+                    RaiseProperty(null);
                 }
             }
             else if (C == null)
@@ -62,7 +71,7 @@ namespace ClienteWPFJuegoCS.Game
                 if (A != null && B != null)
                 {
                     C = A + B;
-                    RaiseProperty();
+                    RaiseProperty(null);
                 }
             }
         }
@@ -78,7 +87,7 @@ namespace ClienteWPFJuegoCS.Game
                 if (B != null && C != null)
                 {
                     A = C + B;
-                    RaiseProperty();
+                    RaiseProperty(null);
                 }
             }
             else if (B == null)
@@ -86,7 +95,7 @@ namespace ClienteWPFJuegoCS.Game
                 if (A != null && C != null)
                 {
                     B = A - C;
-                    RaiseProperty();
+                    RaiseProperty(null);
                 }
             }
             else if (C == null)
@@ -94,7 +103,7 @@ namespace ClienteWPFJuegoCS.Game
                 if (A != null && B != null)
                 {
                     C = A - B;
-                    RaiseProperty();
+                    RaiseProperty(null);
                 }
             }
         }
