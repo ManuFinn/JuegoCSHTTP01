@@ -125,11 +125,18 @@ namespace ClasesJuegoCS.Game
                         {
                             if (Playing)
                             {
+                                /* 
+                                    Predigo posible fallo aqui.
+
+                                    Mezcle el uso de QueryString con Content.
+                                    No se si se puede, asi que tal vez cause excepcion.
+                                 */
                                 var playername = context.Request.QueryString["Name"];
                                 var buffer = new byte[1024];
                                 context.Request.InputStream.Read(buffer, 0, buffer.Length);
                                 var guessjson = Encoding.UTF8.GetString(buffer);
                                 var guess = JsonSerializer.Deserialize<int?[]?>(guessjson);
+                                /**/
                                 if (playername != null && guess != null)
                                 {
                                     var guessed = PlayerGuess(playername, guess);

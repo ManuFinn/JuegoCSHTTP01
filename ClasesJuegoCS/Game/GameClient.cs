@@ -53,11 +53,18 @@ namespace ClasesJuegoCS.Game
         public async Task<bool?> Play()
         {
             using HttpClient client = new();
+            /* 
+                Predigo posible fallo aqui.
+
+                Mezcle el uso de QueryString con Content.
+                No se si se puede, asi que tal vez cause excepcion.
+            */
             HttpRequestMessage request = new() {
                 Method = HttpMethod.Post,
                 RequestUri = new Uri($"http://{IP}:{Port}/Play?Name={Name}"),
                 Content = new StringContent(JsonSerializer.Serialize(Guess.Numbers), Encoding.UTF8, "application/json")
             };
+            /**/
             var respone = await client.SendAsync(request);
             if (respone.StatusCode == HttpStatusCode.OK)
             {
