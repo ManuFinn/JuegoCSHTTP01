@@ -12,8 +12,8 @@ namespace ClasesJuegoCS.Game
     public class GameServer
     {
 
-        public string Word { get; set; }
-        public List<string> ImageUrls { get; private set; } = new();
+        public Tablero Hidden { get; set; } = new();
+        public Tablero Visible { get; set; } = null;
 
         public List<Player> Players { get; private set; } = new();
 
@@ -68,6 +68,10 @@ namespace ClasesJuegoCS.Game
             if (!Playing)
             {
                 Playing = true;
+                if(!Hidden.Validate()) {
+                    throw new InvalidProgramException("Las operaciones del crucigrama deben ser validas");
+                }
+                Visible = Hidden.HideRandom();
                 Players.ForEach(x => x.Guessed = false);
                 timer.Interval = PlayTime.TotalMilliseconds;
                 timer.Start();
@@ -105,7 +109,7 @@ namespace ClasesJuegoCS.Game
                         {
                             if (Playing)
                             {
-                                var json = JsonSerializer.Serialize(ImageUrls);
+                                var json = JsonSerializer.Serialize(Visible.Numbers);
                                 var data = Encoding.UTF8.GetBytes(json);
                                 context.Response.StatusCode = (int)HttpStatusCode.OK;
                                 context.Response.OutputStream.Write(data);
@@ -122,7 +126,10 @@ namespace ClasesJuegoCS.Game
                             if (Playing)
                             {
                                 var playername = context.Request.QueryString["Name"];
-                                var guess = context.Request.QueryString["Guess"];
+                                var buffer = new byte[1024];
+                                context.Request.InputStream.Read(buffer, 0, buffer.Length);
+                                var guessjson = Encoding.UTF8.GetString(buffer);
+                                var guess = JsonSerializer.Deserialize<int?[]?>(guessjson);
                                 if (playername != null && guess != null)
                                 {
                                     var guessed = PlayerGuess(playername, guess);
@@ -200,13 +207,13 @@ namespace ClasesJuegoCS.Game
         /// <param name="playername">El nombre del jugador que esta intentando adivinar</param>
         /// <param name="guess">La frase que con la que el jugador esta intentando adivinar</param>
         /// <returns>True si ha logrado adivinar. False si no logro adivinar. Null si el jugador no existe</returns>
-        public bool? PlayerGuess(string playername, string guess)
+        public bool? PlayerGuess(string playername, int?[] guess)
         {
             var elpased = counter.Elapsed;
             var player = Players.FirstOrDefault(x => x.Name == playername);
             if (player != null && !player.Guessed)
             {
-                if (guess == Word)
+                if (Array.Equals(Hidden.Numbers, guess))
                 {
                     player.Guessed = true;
                     player.Score += GetScoreByElpasedTime(elpased);

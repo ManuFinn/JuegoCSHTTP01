@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Text;
 using System.Text.Json;
 
 namespace ClasesJuegoCS.Game
@@ -11,9 +12,9 @@ namespace ClasesJuegoCS.Game
         public string IP { get; set; }
         public ulong Port { get; set; }
         public string Name { get; set; }
-        public string Guess { get; set; }
 
-        public List<string> ImageUrls { get; set; } = new();
+        public Tablero Visible { get; set; } = new();
+        public Tablero Guess { get; set; } = new();
 
         public async Task<bool> Join()
         {
@@ -37,7 +38,7 @@ namespace ClasesJuegoCS.Game
             {
                 /* La partida ya ha empezado */
                 var json = await respone.Content.ReadAsStringAsync();
-                ImageUrls = JsonSerializer.Deserialize<List<string>>(json);
+                Visible.Numbers = JsonSerializer.Deserialize<int?[]>(json);
                 return true;
             }
             else if (respone.StatusCode == HttpStatusCode.Conflict)
@@ -52,7 +53,12 @@ namespace ClasesJuegoCS.Game
         public async Task<bool?> Play()
         {
             using HttpClient client = new();
-            var respone = await client.GetAsync($"http://{IP}:{Port}/Play?Name={Name}&Guess={Guess}");
+            HttpRequestMessage request = new() {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri($"http://{IP}:{Port}/Play?Name={Name}"),
+                Content = new StringContent(JsonSerializer.Serialize(Guess.Numbers), Encoding.UTF8, "application/json")
+            };
+            var respone = await client.SendAsync(request);
             if (respone.StatusCode == HttpStatusCode.OK)
             {
                 /* Palabra correcta */
