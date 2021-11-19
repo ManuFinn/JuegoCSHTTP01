@@ -10,7 +10,15 @@ namespace ClienteWPFJuegoCS.Game
     public class Tablero : Raiser
     {
 
-        public int?[] Numbers { get; set; } = new int?[9];
+        private int?[] numbers = new int?[9];
+
+        public int?[] Numbers {
+            get => numbers;
+            set {
+                numbers = value;
+                RaiseProperty();
+            }
+        }
 
         [JsonIgnore] public int? Number1 { get => Numbers[0]; set { Numbers[0] = value; RaiseProperty(); FillRow(0); FillColumn(0); } }
         [JsonIgnore] public int? Number2 { get => Numbers[1]; set { Numbers[1] = value; RaiseProperty(); FillRow(0); FillColumn(1); } }

@@ -41,6 +41,7 @@ namespace ClienteWPFJuegoCS.Game
                 /* La partida ya ha empezado */
                 var json = await respone.Content.ReadAsStringAsync();
                 Visible.Numbers = JsonSerializer.Deserialize<int?[]>(json);
+                Array.Copy(Visible.Numbers, Guess.Numbers, 9);
                 return true;
             }
             else if (respone.StatusCode == HttpStatusCode.Conflict)
