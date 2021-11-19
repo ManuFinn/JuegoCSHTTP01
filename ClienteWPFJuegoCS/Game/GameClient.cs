@@ -24,9 +24,13 @@ namespace ClienteWPFJuegoCS.Game
 
         public GameClient()
         {
-            ConectarCommand = new RelayCommand(Join);
+            ConectarCommand = new RelayCommand(JoinCall);
         }
 
+
+        public async void JoinCall() {
+            var result = await Join();
+        }
 
         public async Task<bool> Join()
         {
@@ -40,6 +44,10 @@ namespace ClienteWPFJuegoCS.Game
                 return true;
             }
             return false;
+        }
+
+        public async void GuessingCall() {
+            var result = await Guessing();
         }
 
         public async Task<bool?> Guessing()
@@ -61,6 +69,10 @@ namespace ClienteWPFJuegoCS.Game
             }
             /* Error en el servidor */
             return null;
+        }
+
+        public async void PlayCall() {
+            var result = await Play();
         }
 
         public async Task<bool?> Play()
@@ -86,6 +98,10 @@ namespace ClienteWPFJuegoCS.Game
             }
             /* El jugador ya no pertence a esta partida o error en el servidor */
             return null;
+        }
+
+        public async void LeaveCall() {
+            var result = await Leave();
         }
 
         public async Task<bool> Leave()
