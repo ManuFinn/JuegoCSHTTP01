@@ -78,7 +78,7 @@ namespace ClasesJuegoCS.Game
         public async Task<bool> Leave()
         {
             using HttpClient client = new();
-            var respone = await client.GetAsync($"http://{IP}:{Port}/Leave?Name={Name}");
+            var respone = await client.DeleteAsync($"http://{IP}:{Port}/Leave?Name={Name}");
             if (respone.StatusCode == HttpStatusCode.OK)
             {
                 /* El jugador ha salido de la partida */

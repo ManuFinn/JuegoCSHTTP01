@@ -121,7 +121,7 @@ namespace ClasesJuegoCS.Game
 
                             }
                         }
-                        else if (context.Request.Url.LocalPath == "/Play")
+                        else if (context.Request.Url.LocalPath == "/Play" && context.Request.HttpMethod == "POST")
                         {
                             if (Playing)
                             {
@@ -145,7 +145,7 @@ namespace ClasesJuegoCS.Game
                                 }
                             }
                         }
-                        else if (context.Request.Url.LocalPath == "/Leave")
+                        else if (context.Request.Url.LocalPath == "/Leave" && context.Request.HttpMethod == "DELETE")
                         {
                             var playername = context.Request.QueryString["Name"];
                             if (playername != null)
