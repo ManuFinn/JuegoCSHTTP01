@@ -18,18 +18,38 @@
         </Grid.RowDefinitions>
         <StackPanel HorizontalAlignment="Center">
             <Label HorizontalAlignment="Center" Content="Introduce IP"/>
-            <TextBox Width="200"/>
-            <Button Margin="0 25 0 0" Content="Conectarse"/>
-
+            <TextBox Width="200" Text="{Binding IP}"/>
+            <Button Margin="0 25 0 0" Content="Conectarse" Command="{Binding }"/>
         </StackPanel>
-        <UniformGrid Grid.Row="1" Rows="2" Columns="2">
-            <Image></Image>
-            <Image></Image>
-            <Image></Image>
-            <Image></Image>
+        <UniformGrid Grid.Row="1" Rows="5" Columns="5">
+            <TextBox Text="{Binding Guess.Number1}"/>
+            <TextBox Text="+"/>
+            <TextBox Text="{Binding Guess.Number2}"/>
+            <TextBox Text="="/>
+            <TextBox Text="{Binding Guess.Number3}"/>
+            <TextBox Text="-"/>
+            <Frame Background="Black"/>
+            <TextBox Text="-"/>
+            <Frame Background="Black"/>
+            <TextBox Text="-"/>
+            <TextBox Text="{Binding Guess.Number4}"/>
+            <TextBox Text="+"/>
+            <TextBox Text="{Binding Guess.Number5}"/>
+            <TextBox Text="="/>
+            <TextBox Text="{Binding Guess.Number6}"/>
+            <TextBox Text="="/>
+            <Frame Background="Black"/>
+            <TextBox Text="="/>
+            <Frame Background="Black"/>
+            <TextBox Text="="/>
+            <TextBox Text="{Binding Guess.Number7}"/>
+            <TextBox Text="+"/>
+            <TextBox Text="{Binding Guess.Number8}"/>
+            <TextBox Text="="/>
+            <TextBox Text="{Binding Guess.Number9}"/>
         </UniformGrid>
         <StackPanel Grid.Row="2">
-            <TextBox Margin="0 45 0 0" Width="200"/>
+            <Button Content="Pipo"/>
         </StackPanel>
     </Grid>
 </Window>

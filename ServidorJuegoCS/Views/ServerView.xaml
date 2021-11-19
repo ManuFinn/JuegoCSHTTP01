@@ -20,10 +20,32 @@
             <Button Margin="0 25 0 0" Content=" Iniciar Servidor "/>
 
         </StackPanel>
-        <Grid Grid.Row="1">
-            <ListBox>
-                
-            </ListBox>
-        </Grid>
+        <UniformGrid Grid.Row="1" Rows="5" Columns="5">
+            <TextBox Text="1"/>
+            <TextBox Text="2"/>
+            <TextBox Text="3"/>
+            <TextBox Text="4"/>
+            <TextBox Text="5"/>
+            <TextBox Text="6"/>
+            <Frame Background="Black"/>
+            <TextBox Text="8"/>
+            <Frame Background="Black"/>
+            <TextBox Text="10"/>
+            <TextBox Text="11"/>
+            <TextBox Text="12"/>
+            <TextBox Text="13"/>
+            <TextBox Text="14"/>
+            <TextBox Text="15"/>
+            <TextBox Text="16"/>
+            <Frame Background="Black"/>
+            <TextBox Text="18"/>
+            <Frame Background="Black"/>
+            <TextBox Text="19"/>
+            <TextBox Text="20"/>
+            <TextBox Text="21"/>
+            <TextBox Text="22"/>
+            <TextBox Text="23"/>
+            <TextBox Text="24"/>
+        </UniformGrid>
     </Grid>
 </Window>
