@@ -125,21 +125,15 @@ namespace ClasesJuegoCS.Game
                         {
                             if (Playing)
                             {
-                                /* 
-                                    Predigo posible fallo aqui.
-
-                                    Mezcle el uso de QueryString con Content.
-                                    No se si se puede, asi que tal vez cause excepcion.
-                                 */
-                                var playername = context.Request.QueryString["Name"];
+                                /**/
                                 var buffer = new byte[1024];
                                 context.Request.InputStream.Read(buffer, 0, buffer.Length);
                                 var guessjson = Encoding.UTF8.GetString(buffer);
-                                var guess = JsonSerializer.Deserialize<int?[]?>(guessjson);
+                                var guess = JsonSerializer.Deserialize<Jugada>(guessjson);
                                 /**/
-                                if (playername != null && guess != null)
+                                if (guess.Player != null && guess.Numbers != null)
                                 {
-                                    var guessed = PlayerGuess(playername, guess);
+                                    var guessed = PlayerGuess(guess);
                                     if (guessed == true)
                                     {
                                         context.Response.StatusCode = (int)HttpStatusCode.OK;
@@ -214,13 +208,13 @@ namespace ClasesJuegoCS.Game
         /// <param name="playername">El nombre del jugador que esta intentando adivinar</param>
         /// <param name="guess">La frase que con la que el jugador esta intentando adivinar</param>
         /// <returns>True si ha logrado adivinar. False si no logro adivinar. Null si el jugador no existe</returns>
-        public bool? PlayerGuess(string playername, int?[] guess)
+        public bool? PlayerGuess(Jugada guess)
         {
             var elpased = counter.Elapsed;
-            var player = Players.FirstOrDefault(x => x.Name == playername);
+            var player = Players.FirstOrDefault(x => x.Name == guess.Player);
             if (player != null && !player.Guessed)
             {
-                if (Array.Equals(Hidden.Numbers, guess))
+                if (Array.Equals(Hidden.Numbers, guess.Numbers))
                 {
                     player.Guessed = true;
                     player.Score += GetScoreByElpasedTime(elpased);
