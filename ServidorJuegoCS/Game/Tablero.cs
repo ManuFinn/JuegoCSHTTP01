@@ -10,17 +10,27 @@ namespace ServidorJuegoCS.Game
     public class Tablero : Raiser
     {
 
-        public int?[] Numbers { get; set; } = new int?[9];
+        private int?[] numbers = new int?[9] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-        [JsonIgnore] public int? Number1 { get => Numbers[0]; set { Numbers[0] = value; RaiseProperty(); FillRow(0); FillColumn(0); } }
-        [JsonIgnore] public int? Number2 { get => Numbers[1]; set { Numbers[1] = value; RaiseProperty(); FillRow(0); FillColumn(1); } }
-        [JsonIgnore] public int? Number3 { get => Numbers[2]; set { Numbers[2] = value; RaiseProperty(); FillRow(0); FillColumn(2); } }
-        [JsonIgnore] public int? Number4 { get => Numbers[3]; set { Numbers[3] = value; RaiseProperty(); FillRow(1); FillColumn(0); } }
-        [JsonIgnore] public int? Number5 { get => Numbers[4]; set { Numbers[4] = value; RaiseProperty(); FillRow(1); FillColumn(1); } }
-        [JsonIgnore] public int? Number6 { get => Numbers[5]; set { Numbers[5] = value; RaiseProperty(); FillRow(1); FillColumn(2); } }
-        [JsonIgnore] public int? Number7 { get => Numbers[6]; set { Numbers[6] = value; RaiseProperty(); FillRow(2); FillColumn(0); } }
-        [JsonIgnore] public int? Number8 { get => Numbers[7]; set { Numbers[7] = value; RaiseProperty(); FillRow(2); FillColumn(1); } }
-        [JsonIgnore] public int? Number9 { get => Numbers[8]; set { Numbers[8] = value; RaiseProperty(); FillRow(2); FillColumn(2); } }
+        public int?[] Numbers
+        {
+            get => numbers;
+            set
+            {
+                numbers = value;
+                RaiseProperty(null);
+            }
+        }
+
+        [JsonIgnore] public int? Number1 { get => Numbers[0]; set { Numbers[0] = value; RaiseProperty(); /*FillRow(0); FillColumn(0);*/ } }
+        [JsonIgnore] public int? Number2 { get => Numbers[1]; set { Numbers[1] = value; RaiseProperty(); /*FillRow(0); FillColumn(1);*/ } }
+        [JsonIgnore] public int? Number3 { get => Numbers[2]; set { Numbers[2] = value; RaiseProperty(); /*FillRow(0); FillColumn(2);*/ } }
+        [JsonIgnore] public int? Number4 { get => Numbers[3]; set { Numbers[3] = value; RaiseProperty(); /*FillRow(1); FillColumn(0);*/ } }
+        [JsonIgnore] public int? Number5 { get => Numbers[4]; set { Numbers[4] = value; RaiseProperty(); /*FillRow(1); FillColumn(1);*/ } }
+        [JsonIgnore] public int? Number6 { get => Numbers[5]; set { Numbers[5] = value; RaiseProperty(); /*FillRow(1); FillColumn(2);*/ } }
+        [JsonIgnore] public int? Number7 { get => Numbers[6]; set { Numbers[6] = value; RaiseProperty(); /*FillRow(2); FillColumn(0);*/ } }
+        [JsonIgnore] public int? Number8 { get => Numbers[7]; set { Numbers[7] = value; RaiseProperty(); /*FillRow(2); FillColumn(1);*/ } }
+        [JsonIgnore] public int? Number9 { get => Numbers[8]; set { Numbers[8] = value; RaiseProperty(); /*FillRow(2); FillColumn(2);*/ } }
 
         public void Clear()
         {
@@ -124,6 +134,7 @@ namespace ServidorJuegoCS.Game
             Select(6, 9);
 
             Tablero tablero = new();
+            tablero.Numbers = new int?[9];
 
             foreach(var s in selections) {
                 tablero.Numbers[s] = Numbers[s];

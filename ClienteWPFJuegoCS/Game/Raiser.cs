@@ -8,7 +8,7 @@ namespace ClienteWPFJuegoCS.Game {
 
         public event PropertyChangedEventHandler PropertyChanged;
         
-        protected void RaiseProperty([CallerMemberName]string propertyname = null) {
+        public void RaiseProperty([CallerMemberName]string propertyname = null) {
             PropertyChanged?.Invoke(this, new(propertyname));
         }
 

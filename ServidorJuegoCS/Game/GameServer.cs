@@ -1,5 +1,7 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Command;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -8,14 +10,16 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace ServidorJuegoCS.Game
 {
 
-    public class GameServer
+    public class GameServer : Raiser
     {
 
-        bool playing;
+        bool playing = false;
 
         public Tablero Hidden { get; set; } = new();
         public Tablero Visible { get; set; } = null;
@@ -30,6 +34,7 @@ namespace ServidorJuegoCS.Game
         HttpListener listener = null;
         System.Timers.Timer timer = new();
         System.Timers.Timer counterback = new();
+        Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
 
         int seconds;
         public int Seconds { get => seconds; set { seconds = value; RaiseProperty(); } }
@@ -50,7 +55,8 @@ namespace ServidorJuegoCS.Game
                 Stop();
             };
             counterback.Interval = 1000;
-            counterback.Elapsed += (s, e) => {
+            counterback.Elapsed += (s, e) =>
+            {
                 seconds--;
             };
         }
@@ -87,14 +93,18 @@ namespace ServidorJuegoCS.Game
 
         public void Start()
         {
-            if (!Playing)
+            if (Playing == false)
             {
+                //if (Hidden.Validate() == false)
+                //{
+                //    throw new InvalidProgramException("Las operaciones del crucigrama deben ser validas");
+                //}
                 Playing = true;
-                if(!Hidden.Validate()) {
-                    throw new InvalidProgramException("Las operaciones del crucigrama deben ser validas");
-                }
                 Visible = Hidden.HideRandom();
-                Players.ForEach(x => x.Guessed = false);
+                foreach (var p in Players)
+                {
+                    p.Guessed = false;
+                }
                 timer.Interval = PlayTime.TotalMilliseconds;
                 timer.Start();
                 counterback.Start();
@@ -111,83 +121,102 @@ namespace ServidorJuegoCS.Game
                 listener.Start();
                 Task.Run(() =>
                 {
-                    while (listener.IsListening)
+                    try
                     {
-                        var context = listener.GetContext();
-                        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        if (context.Request.Url.LocalPath == "/Join")
+                        while (listener.IsListening)
                         {
-                            var playername = context.Request.QueryString["Name"];
-                            if (playername != null)
+                            var context = listener.GetContext();
+                            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                            if (context.Request.Url.LocalPath == "/Join")
                             {
-                                var name = AddPlayerByName(playername);
-                                var json = JsonSerializer.Serialize(name);
-                                var data = Encoding.UTF8.GetBytes(json);
-                                context.Response.StatusCode = (int)HttpStatusCode.OK;
-                                context.Response.OutputStream.Write(data);
-                                context.Response.ContentType = "application/json";
-                            }
-                        }
-                        else if (context.Request.Url.LocalPath == "/Guessing")
-                        {
-                            if (Playing)
-                            {
-                                var json = JsonSerializer.Serialize(Visible.Numbers);
-                                var data = Encoding.UTF8.GetBytes(json);
-                                context.Response.StatusCode = (int)HttpStatusCode.OK;
-                                context.Response.OutputStream.Write(data);
-                                context.Response.ContentType = "application/json";
-                            }
-                            else
-                            {
-                                context.Response.StatusCode = (int)HttpStatusCode.Conflict;
-
-                            }
-                        }
-                        else if (context.Request.Url.LocalPath == "/Play" && context.Request.HttpMethod == "POST")
-                        {
-                            if (Playing)
-                            {
-                                /**/
-                                var buffer = new byte[1024];
-                                context.Request.InputStream.Read(buffer, 0, buffer.Length);
-                                var guessjson = Encoding.UTF8.GetString(buffer);
-                                var guess = JsonSerializer.Deserialize<Jugada>(guessjson);
-                                /**/
-                                if (guess.Player != null && guess.Numbers != null)
+                                var playername = context.Request.QueryString["Name"];
+                                if (playername != null)
                                 {
-                                    var guessed = PlayerGuess(guess);
-                                    if (guessed == true)
+                                    string name = "";
+                                    dispatcher.Invoke(() =>
                                     {
-                                        context.Response.StatusCode = (int)HttpStatusCode.Accepted;
-                                    }
-                                    else if (guessed == false)
-                                    {
-                                        context.Response.StatusCode = (int)HttpStatusCode.Conflict;
-                                    } else {
-                                        context.Response.StatusCode = (int)HttpStatusCode.OK;
-                                    }
+                                        name = AddPlayerByName(playername);
+                                    });
+                                    var json = JsonSerializer.Serialize(name);
+                                    var data = Encoding.UTF8.GetBytes(json);
+                                    context.Response.StatusCode = (int)HttpStatusCode.OK;
+                                    context.Response.OutputStream.Write(data);
+                                    context.Response.ContentType = "application/json";
                                 }
                             }
-                        }
-                        else if (context.Request.Url.LocalPath == "/Leave" && context.Request.HttpMethod == "DELETE")
-                        {
-                            var playername = context.Request.QueryString["Name"];
-                            if (playername != null)
+                            else if (context.Request.Url.LocalPath == "/Guessing")
                             {
-                                if (RemovePlayerByName(playername))
+                                if (Playing && Visible != null)
                                 {
+                                    var json = JsonSerializer.Serialize(Visible.Numbers);
+                                    var data = Encoding.UTF8.GetBytes(json);
                                     context.Response.StatusCode = (int)HttpStatusCode.OK;
-
+                                    context.Response.OutputStream.Write(data);
+                                    context.Response.ContentType = "application/json";
                                 }
                                 else
                                 {
                                     context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+
                                 }
                             }
+                            else if (context.Request.Url.LocalPath == "/Play" && context.Request.HttpMethod == "POST")
+                            {
+                                if (Playing)
+                                {
+                                    /**/
+                                    var buffer = new byte[1024];
+                                    int x = context.Request.InputStream.Read(buffer, 0, buffer.Length);
+                                    var guessjson = Encoding.UTF8.GetString(buffer, 0, x);
+                                    var guess = JsonSerializer.Deserialize<Jugada>(guessjson);
+                                    /**/
+                                    if (guess.Player != null && guess.Numbers != null)
+                                    {
+                                        bool? guessed = false;
+                                        dispatcher.Invoke(() =>
+                                        {
+                                            guessed = PlayerGuess(guess);
+                                        });
+                                        if (guessed == true)
+                                        {
+                                            context.Response.StatusCode = (int)HttpStatusCode.Accepted;
+                                        }
+                                        else if (guessed == false)
+                                        {
+                                            context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+                                        }
+                                        else
+                                        {
+                                            context.Response.StatusCode = (int)HttpStatusCode.OK;
+                                        }
+                                    }
+                                }
+                            }
+                            else if (context.Request.Url.LocalPath == "/Leave" && context.Request.HttpMethod == "DELETE")
+                            {
+                                var playername = context.Request.QueryString["Name"];
+                                if (playername != null)
+                                {
+                                    bool result = false;
+                                    dispatcher.Invoke(() =>
+                                    {
+                                        result = RemovePlayerByName(playername);
+                                    });
+                                    if (result)
+                                    {
+                                        context.Response.StatusCode = (int)HttpStatusCode.OK;
+
+                                    }
+                                    else
+                                    {
+                                        context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+                                    }
+                                }
+                            }
+                            context.Response.Close();
                         }
-                        context.Response.Close();
                     }
+                    catch { }
                 });
             }
         }
@@ -217,7 +246,10 @@ namespace ServidorJuegoCS.Game
         /// </summary>
         public void ResetScores()
         {
-            Players.ForEach(x => x.Score = 0);
+            foreach (var p in Players)
+            {
+                p.Score = 0;
+            }
         }
 
         /// <summary>
@@ -238,23 +270,35 @@ namespace ServidorJuegoCS.Game
         {
             var elpased = counter.Elapsed;
             var player = Players.FirstOrDefault(x => x.Name == guess.Player);
-            if(player == null) return false;
+            if (player == null) return false;
             if (!player.Guessed)
             {
-                if (Array.Equals(Hidden.Numbers, guess.Numbers))
+                for (var i = 0; i < Hidden.Numbers.Length; i++)
                 {
-                    player.Guessed = true;
-                    player.Score += GetScoreByElpasedTime(elpased);
-                    return true;
+                    if (Hidden.Numbers[i] != guess.Numbers[i]) return false;
                 }
-                return false;
+                player.Guessed = true;
+                player.Score += GetScoreByElpasedTime(elpased);
+                return true;
             }
             return null;
         }
 
         public bool RemovePlayerByName(string name)
         {
-            return Players.RemoveAll(x => x.Name == name) > 0;
+            List<Player> toremove = new();
+            foreach (var p in Players)
+            {
+                if (p.Name == name)
+                {
+                    toremove.Add(p);
+                }
+            }
+            foreach (var p in toremove)
+            {
+                Players.Remove(p);
+            }
+            return toremove.Count > 0;
         }
 
     }

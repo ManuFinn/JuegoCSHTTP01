@@ -6,31 +6,41 @@
         xmlns:game="clr-namespace:ClienteWPFJuegoCS.Game"
         xmlns:local="clr-namespace:ClienteWPFJuegoCS"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="400">
     <Window.DataContext>
         <game:GameClient/>
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="145"/>
             <RowDefinition/>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
         <StackPanel HorizontalAlignment="Center">
             <Label HorizontalAlignment="Center" Content="Introduce IP"/>
             <TextBox Width="200" Text="{Binding IP}"/>
-            <Button Margin="0 25 0 0" Content="Conectarse" Command="{Binding }"/>
+            <TextBox Width="200" Text="{Binding Name}"/>
+            <Button Margin="0 25 0 0" Content="Conectarse" Command="{Binding ConectarCommand}"/>
         </StackPanel>
-        <UniformGrid Grid.Row="1" Rows="5" Columns="5">
+        <UniformGrid Grid.Row="1" Rows="5" Columns="5" Width="247">
+            <UniformGrid.Resources>
+                <Style TargetType="TextBox">
+                    <Setter Property="Width" Value="50"/>
+                    <Setter Property="Height" Value="50"/>
+                    <Setter Property="FontSize" Value="25"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                </Style>
+            </UniformGrid.Resources>
             <TextBox Text="{Binding Guess.Number1}"/>
             <TextBox Text="+"/>
             <TextBox Text="{Binding Guess.Number2}"/>
             <TextBox Text="="/>
             <TextBox Text="{Binding Guess.Number3}"/>
             <TextBox Text="-"/>
-            <Frame Background="Black"/>
+            <Frame Background="Black" Width="50" Height="50"/>
             <TextBox Text="-"/>
-            <Frame Background="Black"/>
+            <Frame Background="Black" Width="50" Height="50"/>
             <TextBox Text="-"/>
             <TextBox Text="{Binding Guess.Number4}"/>
             <TextBox Text="+"/>
@@ -38,9 +48,9 @@
             <TextBox Text="="/>
             <TextBox Text="{Binding Guess.Number6}"/>
             <TextBox Text="="/>
-            <Frame Background="Black"/>
+            <Frame Background="Black" Width="50" Height="50"/>
             <TextBox Text="="/>
-            <Frame Background="Black"/>
+            <Frame Background="Black" Width="50" Height="50"/>
             <TextBox Text="="/>
             <TextBox Text="{Binding Guess.Number7}"/>
             <TextBox Text="+"/>
@@ -49,7 +59,8 @@
             <TextBox Text="{Binding Guess.Number9}"/>
         </UniformGrid>
         <StackPanel Grid.Row="2">
-            <Button Content="Pipo"/>
+            <Button Content="Enviar" Margin="0 5 0 0" Height="20" Width="60" Command="{Binding EnviarCommand}"/>
+            <Label HorizontalAlignment="Center" Content="{Binding Log}"/>
         </StackPanel>
     </Grid>
 </Window>

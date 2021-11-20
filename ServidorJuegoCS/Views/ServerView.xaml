@@ -12,40 +12,65 @@
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="120"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel HorizontalAlignment="Center">
             <Label HorizontalAlignment="Center" Content="Introduce IP"/>
-            <Button Margin="0 25 0 0" Content=" Iniciar Servidor "/>
-
+            <Button Margin="0 5 0 0" Content=" Iniciar Servidor " Command="{Binding IniciarServidorCommnad}"/>
+            <Button Margin="0 5 0 0" Content=" Iniciar Partida " Command="{Binding IniciarPartidaCommnad}"/>
+            <Button Margin="0 5 0 0" Content=" Detener Servidor " Command="{Binding DetenerServidorCommnad}"/>
         </StackPanel>
-        <UniformGrid Grid.Row="1" Rows="5" Columns="5">
-            <TextBox Text="1"/>
-            <TextBox Text="2"/>
-            <TextBox Text="3"/>
-            <TextBox Text="4"/>
-            <TextBox Text="5"/>
-            <TextBox Text="6"/>
-            <Frame Background="Black"/>
-            <TextBox Text="8"/>
-            <Frame Background="Black"/>
-            <TextBox Text="10"/>
-            <TextBox Text="11"/>
-            <TextBox Text="12"/>
-            <TextBox Text="13"/>
-            <TextBox Text="14"/>
-            <TextBox Text="15"/>
-            <TextBox Text="16"/>
-            <Frame Background="Black"/>
-            <TextBox Text="18"/>
-            <Frame Background="Black"/>
-            <TextBox Text="19"/>
-            <TextBox Text="20"/>
-            <TextBox Text="21"/>
-            <TextBox Text="22"/>
-            <TextBox Text="23"/>
-            <TextBox Text="24"/>
-        </UniformGrid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <UniformGrid Grid.Column="0"  Rows="5" Columns="5">
+                <UniformGrid.Resources>
+                    <Style TargetType="TextBox">
+                        <Setter Property="FontSize" Value="25"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    </Style>
+                </UniformGrid.Resources>
+                <TextBox Text="{Binding Hidden.Number1}"/>
+                <TextBox Text="+"/>
+                <TextBox Text="{Binding Hidden.Number2}"/>
+                <TextBox Text="="/>
+                <TextBox Text="{Binding Hidden.Number3}"/>
+                <TextBox Text="-"/>
+                <Frame Background="Black"/>
+                <TextBox Text="-"/>
+                <Frame Background="Black"/>
+                <TextBox Text="-"/>
+                <TextBox Text="{Binding Hidden.Number4}"/>
+                <TextBox Text="+"/>
+                <TextBox Text="{Binding Hidden.Number5}"/>
+                <TextBox Text="="/>
+                <TextBox Text="{Binding Hidden.Number6}"/>
+                <TextBox Text="="/>
+                <Frame Background="Black"/>
+                <TextBox Text="="/>
+                <Frame Background="Black"/>
+                <TextBox Text="="/>
+                <TextBox Text="{Binding Hidden.Number7}"/>
+                <TextBox Text="+"/>
+                <TextBox Text="{Binding Hidden.Number8}"/>
+                <TextBox Text="="/>
+                <TextBox Text="{Binding Hidden.Number9}"/>
+            </UniformGrid>
+            
+            <ListBox Grid.Column="1" ItemsSource="{Binding Players}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="{Binding Name}"/>
+                            <Label Content="{Binding Score}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
     </Grid>
 </Window>

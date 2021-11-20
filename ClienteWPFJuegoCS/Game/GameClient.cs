@@ -13,12 +13,12 @@ namespace ClienteWPFJuegoCS.Game
     public class GameClient : Raiser
     {
 
-        string name;
+        string name = "PIPO";
         string log;
         bool connected;
         bool guessed;
 
-        public string IP { get; set; } = "127.0.0.1";
+        public string IP { get; set; } = "localhost";
         public string Name { get => name; set { name = value; RaiseProperty(); } }
 
         public Tablero Visible { get; set; } = new();
@@ -54,7 +54,7 @@ namespace ClienteWPFJuegoCS.Game
             using HttpClient client = new();
             try
             {
-                var respone = await client.GetAsync($"http://{IP}/Join?Name={Name}");
+                var respone = await client.GetAsync($"http://{IP}:8000/Join?Name={Name}");
                 if (respone.StatusCode == HttpStatusCode.OK)
                 {
                     /* Pudo unirse a la partida */
@@ -62,15 +62,16 @@ namespace ClienteWPFJuegoCS.Game
                     Name = JsonSerializer.Deserialize<string>(json);
                     Guessed = false;
                     Connected = true;
-                    timer.Start();
+                    //timer.Start();
                     //return true;
                     Log = "Se ha unido a la partida";
+                    Guessing();
                     return;
                 }
                 //return false;
                 Log = "No se ha podido unir a la partida";
             }
-            catch
+            catch (Exception ex)
             {
                 Log = "No se ha podido conectar con sel servidor. Revise su conexion a internte";
             }
@@ -78,40 +79,49 @@ namespace ClienteWPFJuegoCS.Game
 
         public async void Guessing()
         {
-            Play(); // Checar si cambio de ronda
-            if (!Guessed)
+            await GuessingAsync();
+        }
+
+        public async Task GuessingAsync()
+        {
+            //Play(); // Checar si cambio de ronda
+            //if (!Guessed)
+            //{
+            using HttpClient client = new();
+            try
             {
-                using HttpClient client = new();
-                try
+            Loop:
+                var respone = await client.GetAsync($"http://{IP}:8000/Guessing");
+                if (respone.StatusCode == HttpStatusCode.OK)
                 {
-                    var respone = await client.GetAsync($"http://{IP}/Guessing");
-                    if (respone.StatusCode == HttpStatusCode.OK)
-                    {
-                        /* La partida ya ha empezado */
-                        timer.Stop();
-                        var json = await respone.Content.ReadAsStringAsync();
-                        Visible.Numbers = JsonSerializer.Deserialize<int?[]>(json);
-                        Array.Copy(Visible.Numbers, Guess.Numbers, 9);
-                        //return true;
-                        Log = "Intente llenar el crucigrama";
-                        return;
-                    }
-                    else if (respone.StatusCode == HttpStatusCode.Conflict)
-                    {
-                        /* La partida aun no ha empezado */
-                        //return false;
-                        Log = "La ronda ya ha acabado. Espere a que empiece una nueva";
-                        return;
-                    }
-                    /* Error en el servidor */
-                    //return null;
-                    Log = "Error inesperado. Intente enviar de nuevo el crucigrama";
+                    /* La partida ya ha empezado */
+                    //timer.Stop();
+                    var json = await respone.Content.ReadAsStringAsync();
+                    Visible.Numbers = JsonSerializer.Deserialize<int?[]>(json);
+                    Array.Copy(Visible.Numbers, Guess.Numbers, 9);
+                    Guess.RaiseProperty(null);
+                    //return true;
+                    Log = "Intente llenar el crucigrama";
+                    return;
                 }
-                catch
+                else if (respone.StatusCode == HttpStatusCode.Conflict)
                 {
-                    Log = "No se ha podido conectar con sel servidor. Revise su conexion a internte";
+                    /* La partida aun no ha empezado */
+                    //return false;
+                    Log = "La ronda ya ha acabado. Espere a que empiece una nueva";
+                    Task.Delay(100);
+                    goto Loop;
+                    return;
                 }
+                /* Error en el servidor */
+                //return null;
+                Log = "Error inesperado. Intente enviar de nuevo el crucigrama";
             }
+            catch
+            {
+                Log = "No se ha podido conectar con sel servidor. Revise su conexion a internte";
+            }
+            //}
         }
 
         public async void Play()
@@ -123,7 +133,7 @@ namespace ClienteWPFJuegoCS.Game
                 HttpRequestMessage request = new()
                 {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri($"http://{IP}/Play"),
+                    RequestUri = new Uri($"http://{IP}:8000/Play"),
                     Content = new StringContent(JsonSerializer.Serialize(new Jugada { Player = Name, Numbers = Guess.Numbers }), Encoding.UTF8, "application/json")
                 };
                 /**/
@@ -133,7 +143,8 @@ namespace ClienteWPFJuegoCS.Game
                     /* Palabra correcta */
                     //return true;
                     Guessed = true;
-                    if(!timer.Enabled) timer.Start();
+                    //if(!timer.Enabled) timer.Start();
+                    await GuessingAsync();
                     Log = "Felicidades su respuesta es correcta";
                     return;
                 }
@@ -142,7 +153,8 @@ namespace ClienteWPFJuegoCS.Game
                     /* Palabra equivocada */
                     //return false;
                     Guessed = true;
-                    if(!timer.Enabled) timer.Start();
+                    //if(!timer.Enabled) timer.Start();
+                    await GuessingAsync();
                     Log = "Su respuesta ya ha sido aceptada";
                     return;
                 }
@@ -151,7 +163,8 @@ namespace ClienteWPFJuegoCS.Game
                     /* Palabra equivocada */
                     //return false;
                     Guessed = false;
-                    if(timer.Enabled) timer.Stop();
+                    //if(timer.Enabled) timer.Stop();
+                    await GuessingAsync();
                     Log = "Su respuesta ha sido rechazada";
                     return;
                 }
@@ -170,7 +183,7 @@ namespace ClienteWPFJuegoCS.Game
             using HttpClient client = new();
             try
             {
-                var respone = await client.DeleteAsync($"http://{IP}/Leave?Name={Name}");
+                var respone = await client.DeleteAsync($"http://{IP}:8000/Leave?Name={Name}");
                 if (respone.StatusCode == HttpStatusCode.OK)
                 {
                     /* El jugador ha salido de la partida */
